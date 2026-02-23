@@ -1,14 +1,13 @@
 # ALttP MSU-1 Music Switcher
 
-A Windows desktop utility for managing MSU-1 music packs for the **A Link to the Past Randomizer**. Pick audio files for each of the 50 in-game music slots, preview them, and assemble a complete MSU-1 pack in one click.
-
-![App Icon](Resources/OoT_Ocarina_of_Time_Render.png)
+A Windows desktop utility for managing MSU-1 music packs for the **A Link to the Past Randomizer**. Pick audio files for each of the 61 in-game music slots, preview them, and assemble a complete MSU-1 pack in one click.
 
 ---
 
 ## Features
 
-- **50-slot track list** — every ALttP music slot listed by name
+- **61-slot track list** — all ALttP music slots listed by name, including extended dungeon and boss tracks
+- **Output file renaming** — customize the base name used for all output files before applying (e.g. `mypack.sfc`, `mypack.msu`, `mypack-2.pcm`)
 - **Audio conversion built-in** — import MP3, WAV, WMA, AAC, M4A, AIFF, and more; the app converts them to MSU-1 PCM format automatically
 - **Preview playback** — listen to any assigned track before applying
 - **One-click pack assembly** — copies the ROM, generates the `.msu` marker file, and writes all numbered `.pcm` files
@@ -29,7 +28,7 @@ A Windows desktop utility for managing MSU-1 music packs for the **A Link to the
 
 ## Installation
 
-Download `LTTPMusicReplacerSetup-1.0.0-win64.exe` from the [Releases](../../releases) page and run it. No administrator password needed — it installs to your personal `AppData\Local\Programs` folder.
+Download the latest installer (`LTTPMusicReplacerSetup-*-win64.exe`) from the [Releases](../../releases/latest) page and run it. No administrator password needed — it installs to your personal `AppData\Local\Programs` folder.
 
 Alternatively, grab just the standalone `LTTPMusicReplacer.exe` and run it from anywhere.
 
@@ -42,7 +41,7 @@ Click **Select ROM** in the toolbar and pick your ALttP Randomizer `.sfc` or `.s
 
 ### 2. Assign audio to slots
 For each track slot you want to replace:
-- Click **Replace** to open a file picker
+- Click **Pick File** (or **Replace**) to open a file picker
 - Select any supported audio file (see [Supported Formats](#supported-audio-formats) below)
 - If you pick a non-PCM file, it is automatically converted to MSU-1 PCM and saved next to the source file
 
@@ -51,15 +50,27 @@ The ▶ button previews the assigned track. Click it again (or pick a different 
 ### 3. Set output folder
 Click **Browse…** next to the output folder path and choose where the finished pack should be written.
 
-### 4. Apply
+### 4. Set output base name
+The **Output Base Name** field controls the filename stem used for every file the app writes. It auto-fills from your ROM filename, but you can change it freely.
+
+For example, setting it to `mypack` produces:
+```
+mypack.sfc
+mypack.msu
+mypack-2.pcm
+mypack-9.pcm
+…
+```
+
+### 5. Apply
 Click **Apply to ROM**. The app will:
-1. Copy your ROM to the output folder
+1. Copy your ROM to the output folder (using the base name you set)
 2. Create the required empty `.msu` marker file
-3. Copy/write all assigned `.pcm` files with the correct numbered names (e.g. `rom-2.pcm`, `rom-3.pcm`, …)
+3. Copy/write all assigned `.pcm` files with the correct numbered names
 
 The log panel at the bottom shows progress and any errors.
 
-### 5. Save / Load config
+### 6. Save / Load config
 Use **Save Config** to write your current slot assignments to a `.json` file. Use **Load Config** to restore them later — handy when building multiple packs from the same base.
 
 ---
@@ -90,6 +101,18 @@ MSU-1 PCM files use the following layout:
 | 0–3 | ASCII signature: `MSU1` |
 | 4–7 | Loop point (uint32, little-endian) — `0` = loop from beginning |
 | 8+ | Raw PCM: 44,100 Hz · 16-bit signed · stereo interleaved |
+
+---
+
+## Troubleshooting
+
+If the app crashes or fails to start, a crash log is automatically written to:
+
+```
+%LocalAppData%\LTTPMusicReplacer\crash.log
+```
+
+Please include the contents of this file when reporting an issue.
 
 ---
 
@@ -131,9 +154,9 @@ LTTPMusicReplacer/
 ├── Converters/
 │   └── ValueConverters.cs    # WPF value converters
 ├── Resources/
-│   ├── trackCatalog.json     # Slot number → track name mapping
+│   ├── trackCatalog.json     # Slot number → track name mapping (61 slots)
 │   ├── Styles.xaml           # Dark theme resource dictionary
-│   └── icon.ico              # App icon (16/32/48/256 px)
+│   └── icon.ico              # App icon
 ├── App.xaml / App.xaml.cs
 ├── MainWindow.xaml / MainWindow.xaml.cs
 ├── LTTPMusicReplacer.csproj
