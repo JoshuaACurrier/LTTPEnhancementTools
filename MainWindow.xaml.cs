@@ -26,6 +26,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private string? _romBaseName;
     private string? _outputBaseName;
     private string? _outputDir;
+    private string? _spritePath;
     private bool _isApplying;
     private bool _isConverting;
 
@@ -48,6 +49,18 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         get => _outputDir;
         private set { _outputDir = value; OnPropertyChanged(); OnPropertyChanged(nameof(CanApply)); }
     }
+
+    public string? SpritePath
+    {
+        get => _spritePath;
+        set { _spritePath = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSprite)); OnPropertyChanged(nameof(SpriteDisplayName)); }
+    }
+
+    public bool HasSprite => _spritePath is not null;
+
+    public string? SpriteDisplayName => _spritePath is null
+        ? null
+        : Path.GetFileNameWithoutExtension(_spritePath);
 
     public bool HasRom => _romPath is not null;
 
@@ -354,6 +367,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         return new AppConfig
         {
             RomPath = _romPath ?? string.Empty,
+            SpritePath = _spritePath ?? string.Empty,
             Tracks = tracks
         };
     }
@@ -377,6 +391,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             ? null
             : Path.GetFileNameWithoutExtension(config.RomPath);
         OutputBaseName = RomBaseName;
+
+        // Set sprite
+        SpritePath = string.IsNullOrEmpty(config.SpritePath) ? null : config.SpritePath;
 
         // Assign tracks
         foreach (var (key, pcmPath) in config.Tracks)
@@ -452,7 +469,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             .Where(t => t.HasFile)
             .ToDictionary(t => t.SlotNumber.ToString(), t => t.PcmPath!);
 
-        var req = new ApplyRequest(_romPath, _outputDir, tracks, OverwriteMode.Ask, OutputBaseName?.Trim());
+        var req = new ApplyRequest(_romPath, _outputDir, tracks, OverwriteMode.Ask, OutputBaseName?.Trim(), _spritePath);
 
         int lastTotal = 1;
         var progress = new Progress<(string step, int current, int total)>(p =>
@@ -522,6 +539,53 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             };
             e.Complete();
         });
+    }
+
+    // ── Sprite Handlers ───────────────────────────────────────────────────
+    private void BrowseSprite_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new OpenFileDialog
+        {
+            Title = "Select Link Sprite File",
+            Filter = "Sprite Files (*.zspr;*.spr)|*.zspr;*.spr|ZSPR Sprite (*.zspr)|*.zspr|Legacy Sprite (*.spr)|*.spr|All Files (*.*)|*.*",
+            CheckFileExists = true
+        };
+
+        if (dlg.ShowDialog(this) != true) return;
+
+        string? error = SpriteApplier.Validate(dlg.FileName);
+        if (error is not null)
+        {
+            AppendLog($"[ERROR] Invalid sprite file: {error}");
+            MessageBox.Show(error, "Invalid Sprite", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        SpritePath = dlg.FileName;
+        AppendLog($"Sprite selected: {Path.GetFileName(dlg.FileName)}");
+    }
+
+    private void BrowseSpritesOnline_Click(object sender, RoutedEventArgs e)
+    {
+        var window = new SpriteBrowserWindow { Owner = this };
+        if (window.ShowDialog() != true) return;
+        if (window.SelectedSpritePath is null) return;
+
+        string? error = SpriteApplier.Validate(window.SelectedSpritePath);
+        if (error is not null)
+        {
+            AppendLog($"[ERROR] Invalid downloaded sprite: {error}");
+            return;
+        }
+
+        SpritePath = window.SelectedSpritePath;
+        AppendLog($"Sprite selected: {Path.GetFileNameWithoutExtension(window.SelectedSpritePath)}");
+    }
+
+    private void ClearSprite_Click(object sender, RoutedEventArgs e)
+    {
+        SpritePath = null;
+        AppendLog("Sprite cleared.");
     }
 
     // ── Log ───────────────────────────────────────────────────────────────

@@ -7,7 +7,8 @@ public record ApplyRequest(
     string OutputDir,
     IReadOnlyDictionary<string, string> Tracks, // slot -> pcm path
     OverwriteMode OverwriteMode,
-    string? OutputBaseName = null // overrides ROM filename stem for all output files
+    string? OutputBaseName = null,     // overrides ROM filename stem for all output files
+    string? SpriteSourcePath = null    // optional .zspr/.spr to inject into the output ROM
 );
 
 public enum OverwriteMode { Ask, Overwrite, Skip }
@@ -33,7 +34,8 @@ public class ApplyEngine
             .OrderBy(kv => int.Parse(kv.Key))
             .ToList();
 
-        int totalSteps = 4 + sortedSlots.Count; // validate, mkdir, rom, msu, pcms
+        bool hasSprite = !string.IsNullOrEmpty(req.SpriteSourcePath);
+        int totalSteps = 4 + sortedSlots.Count + (hasSprite ? 1 : 0); // validate, mkdir, rom, [sprite], msu, pcms
 
         // STEP 1 — Validate
         progress.Report(("Validating inputs...", 0, totalSteps));
@@ -46,6 +48,16 @@ public class ApplyEngine
         {
             if (!File.Exists(pcmPath))
                 throw new FileNotFoundException($"PCM file for slot {slot} not found: {pcmPath}");
+        }
+
+        if (hasSprite)
+        {
+            if (!File.Exists(req.SpriteSourcePath))
+                throw new FileNotFoundException($"Sprite file not found: {req.SpriteSourcePath}");
+
+            var spriteValidationError = SpriteApplier.Validate(req.SpriteSourcePath!);
+            if (spriteValidationError != null)
+                throw new InvalidDataException($"Invalid sprite file: {spriteValidationError}");
         }
 
         // STEP 2 — Compute output names
@@ -101,19 +113,30 @@ public class ApplyEngine
             filesWritten.Add(romDest);
         }
 
-        // STEP 6 — Write 0-byte .msu
-        progress.Report(("Writing .msu marker...", 4, totalSteps));
+        // STEP 6 (optional) — Apply sprite to output ROM
+        int msuStepIndex = 4;
+        if (hasSprite && !skipPaths.Contains(romDest))
+        {
+            progress.Report(("Applying sprite...", 4, totalSteps));
+            var spriteError = await Task.Run(() => SpriteApplier.Apply(req.SpriteSourcePath!, romDest), ct);
+            if (spriteError != null)
+                throw new InvalidOperationException($"Sprite injection failed: {spriteError}");
+            msuStepIndex = 5;
+        }
+
+        // STEP 7 — Write 0-byte .msu
+        progress.Report(("Writing .msu marker...", msuStepIndex, totalSteps));
         if (!skipPaths.Contains(msuDest))
         {
             await Task.Run(() => File.WriteAllBytes(msuDest, Array.Empty<byte>()), ct);
             filesWritten.Add(msuDest);
         }
 
-        // STEP 7 — Copy PCMs
+        // STEP 8 — Copy PCMs
         for (int i = 0; i < pcmDests.Count; i++)
         {
             var (slot, src, dest) = pcmDests[i];
-            progress.Report(($"Copying track {slot}...", 5 + i, totalSteps));
+            progress.Report(($"Copying track {slot}...", msuStepIndex + 1 + i, totalSteps));
             ct.ThrowIfCancellationRequested();
 
             if (!skipPaths.Contains(dest))

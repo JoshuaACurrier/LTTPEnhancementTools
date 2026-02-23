@@ -222,6 +222,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Output folder row -->
@@ -270,12 +272,81 @@
                                 Click="BrowseOutputDir_Click"/>
                     </Grid>
 
-                    <!-- Base name row -->
+                    <!-- Sprite row -->
                     <TextBlock Grid.Row="2"
+                               Text="LINK SPRITE (OPTIONAL)"
+                               Style="{StaticResource SectionLabel}"/>
+
+                    <Grid Grid.Row="3" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Sprite path display -->
+                        <Border Grid.Column="0"
+                                Background="{StaticResource SurfaceAltBrush}"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="10,6"
+                                Margin="0,0,8,0"
+                                MinHeight="34">
+                            <TextBlock FontFamily="Consolas" FontSize="12"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="{Binding SpriteDisplayName}"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                        <Setter Property="FontStyle" Value="Normal"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasSprite}" Value="False">
+                                                <Setter Property="Text" Value="No sprite selected (optional)"/>
+                                                <Setter Property="FontStyle" Value="Italic"/>
+                                                <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+
+                        <!-- Browse local file -->
+                        <Button Grid.Column="1"
+                                Content="Browse File..."
+                                Style="{StaticResource DarkButton}"
+                                Padding="12,6"
+                                Margin="0,0,6,0"
+                                Click="BrowseSprite_Click"
+                                ToolTip="Select a local .zspr or .spr file"/>
+
+                        <!-- Browse online sprites -->
+                        <Button Grid.Column="2"
+                                Content="Browse Sprites..."
+                                Style="{StaticResource DarkButton}"
+                                Padding="12,6"
+                                Margin="0,0,6,0"
+                                Click="BrowseSpritesOnline_Click"
+                                ToolTip="Pick a sprite from the online ALttP sprite library"/>
+
+                        <!-- Clear sprite -->
+                        <Button Grid.Column="3"
+                                Content="✕"
+                                Style="{StaticResource ClearButton}"
+                                Visibility="{Binding HasSprite, Converter={StaticResource BoolToVis}}"
+                                Click="ClearSprite_Click"
+                                ToolTip="Remove sprite"/>
+                    </Grid>
+
+                    <!-- Base name row -->
+                    <TextBlock Grid.Row="4"
                                Text="OUTPUT BASE NAME"
                                Style="{StaticResource SectionLabel}"/>
 
-                    <TextBox Grid.Row="3"
+                    <TextBox Grid.Row="5"
                              Style="{StaticResource DarkTextBox}"
                              Text="{Binding OutputBaseName, UpdateSourceTrigger=PropertyChanged}"
                              FontFamily="Consolas"
@@ -283,7 +354,7 @@
                              ToolTip="File name stem used for all output files (e.g. myrom → myrom.sfc, myrom.msu, myrom-2.pcm)"/>
 
                     <!-- Apply row -->
-                    <Grid Grid.Row="4">
+                    <Grid Grid.Row="6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -315,7 +386,7 @@
                     </Grid>
 
                     <!-- Progress bar -->
-                    <Grid Grid.Row="5" x:Name="ProgressSection" Visibility="Collapsed" Margin="0,8,0,0">
+                    <Grid Grid.Row="7" x:Name="ProgressSection" Visibility="Collapsed" Margin="0,8,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>

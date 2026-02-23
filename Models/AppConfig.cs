@@ -13,6 +13,9 @@ public class AppConfig
     [JsonPropertyName("tracks")]
     public Dictionary<string, string> Tracks { get; set; } = new();
 
+    [JsonPropertyName("spritePath")]
+    public string SpritePath { get; set; } = string.Empty;
+
     [JsonPropertyName("lastModified")]
     public string LastModified { get; set; } = string.Empty;
 }

@@ -37,6 +37,7 @@ public static class ConfigManager
             // Normalize paths to forward slashes for cross-editor readability
             config.LastModified = DateTime.UtcNow.ToString("o");
             config.RomPath = config.RomPath.Replace('\\', '/');
+            config.SpritePath = config.SpritePath.Replace('\\', '/');
             var normalizedTracks = config.Tracks
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Replace('\\', '/'));
             config.Tracks = normalizedTracks;
