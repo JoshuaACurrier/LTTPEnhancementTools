@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace LTTPMusicReplacer.Models;
+namespace LTTPEnhancementTools.Models;
 
 public class TrackSlot : INotifyPropertyChanged
 {

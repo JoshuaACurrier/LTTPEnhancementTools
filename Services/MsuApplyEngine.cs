@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace LTTPMusicReplacer.Services;
+namespace LTTPEnhancementTools.Services;
 
 public record ApplyRequest(
     string RomSourcePath,

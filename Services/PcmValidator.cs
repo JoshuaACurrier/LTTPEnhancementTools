@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 
-namespace LTTPMusicReplacer.Services;
+namespace LTTPEnhancementTools.Services;
 
 public static class PcmValidator
 {

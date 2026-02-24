@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace LTTPMusicReplacer.Services;
+namespace LTTPEnhancementTools.Services;
 
 /// <summary>
 /// Validates and applies .zspr / .spr sprite files to a ROM copy.

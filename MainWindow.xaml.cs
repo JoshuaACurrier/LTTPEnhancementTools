@@ -6,8 +6,8 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using LTTPMusicReplacer.Models;
-using LTTPMusicReplacer.Services;
+using LTTPEnhancementTools.Models;
+using LTTPEnhancementTools.Services;
 using Microsoft.Win32;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
@@ -17,7 +17,7 @@ using MessageBoxOptions = System.Windows.MessageBoxOptions;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
-namespace LTTPMusicReplacer;
+namespace LTTPEnhancementTools;
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {

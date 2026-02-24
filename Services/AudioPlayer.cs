@@ -1,7 +1,7 @@
 using System.IO;
 using NAudio.Wave;
 
-namespace LTTPMusicReplacer.Services;
+namespace LTTPEnhancementTools.Services;
 
 /// <summary>
 /// Manages a single audio playback channel for MSU-1 PCM preview.

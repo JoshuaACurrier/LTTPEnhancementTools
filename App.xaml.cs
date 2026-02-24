@@ -4,13 +4,13 @@ using System.Windows.Threading;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
-namespace LTTPMusicReplacer;
+namespace LTTPEnhancementTools;
 
 public partial class App : Application
 {
     private static readonly string CrashLogPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "LTTPMusicReplacer", "crash.log");
+        "LTTPEnhancementTools", "crash.log");
 
     protected override void OnStartup(StartupEventArgs e)
     {

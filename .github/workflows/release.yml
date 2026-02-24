@@ -57,12 +57,12 @@ jobs:
             ### Downloads
             | File | Description |
             |------|-------------|
-            | `LTTPMusicReplacerSetup-*-win64.exe` | **Recommended** — Windows installer (no admin required) |
-            | `LTTPMusicReplacer.exe` | Standalone EXE — run from anywhere, no install needed |
+            | `LTTPEnhancementToolsSetup-*-win64.exe` | **Recommended** — Windows installer (no admin required) |
+            | `LTTPEnhancementTools.exe` | Standalone EXE — run from anywhere, no install needed |
 
             ### Requirements
             - Windows 10 version 1809 or later (64-bit)
             - No .NET runtime required — fully self-contained
           files: |
-            installer/LTTPMusicReplacerSetup-*-win64.exe
-            bin/Release/net8.0-windows/win-x64/publish/LTTPMusicReplacer.exe
+            installer/LTTPEnhancementToolsSetup-*-win64.exe
+            bin/Release/net8.0-windows/win-x64/publish/LTTPEnhancementTools.exe

@@ -28,9 +28,9 @@ A Windows desktop utility for managing MSU-1 music packs for the **A Link to the
 
 ## Installation
 
-Download the latest installer (`LTTPMusicReplacerSetup-*-win64.exe`) from the [Releases](../../releases/latest) page and run it. No administrator password needed — it installs to your personal `AppData\Local\Programs` folder.
+Download the latest installer (`LTTPEnhancementToolsSetup-*-win64.exe`) from the [Releases](../../releases/latest) page and run it. No administrator password needed — it installs to your personal `AppData\Local\Programs` folder.
 
-Alternatively, grab just the standalone `LTTPMusicReplacer.exe` and run it from anywhere.
+Alternatively, grab just the standalone `LTTPEnhancementTools.exe` and run it from anywhere.
 
 ---
 
@@ -109,7 +109,7 @@ MSU-1 PCM files use the following layout:
 If the app crashes or fails to start, a crash log is automatically written to:
 
 ```
-%LocalAppData%\LTTPMusicReplacer\crash.log
+%LocalAppData%\LTTPEnhancementTools\crash.log
 ```
 
 Please include the contents of this file when reporting an issue.
@@ -136,12 +136,12 @@ This runs `dotnet publish` (produces a single ~155 MB self-contained EXE) and th
 Or publish manually:
 ```bash
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-# Output: bin\Release\net8.0-windows\win-x64\publish\LTTPMusicReplacer.exe
+# Output: bin\Release\net8.0-windows\win-x64\publish\LTTPEnhancementTools.exe
 ```
 
 ### Project structure
 ```
-LTTPMusicReplacer/
+LTTPEnhancementTools/
 ├── Models/
 │   ├── TrackSlot.cs          # Per-slot data + validation state
 │   └── AppConfig.cs          # JSON config schema
@@ -159,7 +159,7 @@ LTTPMusicReplacer/
 │   └── icon.ico              # App icon
 ├── App.xaml / App.xaml.cs
 ├── MainWindow.xaml / MainWindow.xaml.cs
-├── LTTPMusicReplacer.csproj
+├── LTTPEnhancementTools.csproj
 ├── setup.iss                 # Inno Setup installer script
 └── publish.bat               # One-command build + package script
 ```

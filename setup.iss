@@ -12,22 +12,22 @@ AppId={{7C4B2A8F-3D1E-4F9C-A6B5-8E2D7F3C5A1B}
 AppName=ALttP MSU-1 Music Switcher
 AppVersion={#MyVersion}
 AppVerName=ALttP MSU-1 Music Switcher {#MyVersion}
-AppPublisher=LTTPMusicReplacer
+AppPublisher=LTTPEnhancementTools
 AppPublisherURL=
 AppSupportURL=
 AppUpdatesURL=
 
 ; Install to per-user Programs folder — no admin rights required
-DefaultDirName={localappdata}\Programs\LTTPMusicReplacer
+DefaultDirName={localappdata}\Programs\LTTPEnhancementTools
 DefaultGroupName=ALttP MSU-1 Music Switcher
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 
 ; Output
 OutputDir=installer
-OutputBaseFilename=LTTPMusicReplacerSetup-{#MyVersion}-win64
+OutputBaseFilename=LTTPEnhancementToolsSetup-{#MyVersion}-win64
 SetupIconFile=Resources\icon.ico
-UninstallDisplayIcon={app}\LTTPMusicReplacer.exe
+UninstallDisplayIcon={app}\LTTPEnhancementTools.exe
 
 ; Compression
 Compression=lzma2/ultra64
@@ -57,14 +57,14 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 
 [Files]
 ; Main application executable (self-contained, no .NET required on target machine)
-Source: "bin\Release\net8.0-windows\win-x64\publish\LTTPMusicReplacer.exe"; \
+Source: "bin\Release\net8.0-windows\win-x64\publish\LTTPEnhancementTools.exe"; \
     DestDir: "{app}"; \
     Flags: ignoreversion
 
 [Icons]
 ; Start Menu
 Name: "{group}\ALttP MSU-1 Music Switcher"; \
-    Filename: "{app}\LTTPMusicReplacer.exe"; \
+    Filename: "{app}\LTTPEnhancementTools.exe"; \
     Comment: "Manage MSU-1 music packs for ALttP Randomizer"
 
 Name: "{group}\Uninstall ALttP MSU-1 Music Switcher"; \
@@ -72,11 +72,11 @@ Name: "{group}\Uninstall ALttP MSU-1 Music Switcher"; \
 
 ; Desktop (optional, unchecked by default)
 Name: "{autodesktop}\ALttP MSU-1 Music Switcher"; \
-    Filename: "{app}\LTTPMusicReplacer.exe"; \
+    Filename: "{app}\LTTPEnhancementTools.exe"; \
     Tasks: desktopicon
 
 [Run]
 ; Offer to launch after install
-Filename: "{app}\LTTPMusicReplacer.exe"; \
+Filename: "{app}\LTTPEnhancementTools.exe"; \
     Description: "Launch ALttP MSU-1 Music Switcher"; \
     Flags: nowait postinstall skipifsilent

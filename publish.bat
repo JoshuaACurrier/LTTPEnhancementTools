@@ -28,7 +28,7 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo.
-echo  EXE: bin\Release\net8.0-windows\win-x64\publish\LTTPMusicReplacer.exe
+echo  EXE: bin\Release\net8.0-windows\win-x64\publish\LTTPEnhancementTools.exe
 echo.
 
 :: ── Step 2: Inno Setup ───────────────────────────────────────
@@ -56,7 +56,7 @@ if "!ISCC!"=="" (
     echo    "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
     echo.
     echo  The standalone EXE is ready without an installer:
-    echo    bin\Release\net8.0-windows\win-x64\publish\LTTPMusicReplacer.exe
+    echo    bin\Release\net8.0-windows\win-x64\publish\LTTPEnhancementTools.exe
 ) else (
     if not exist installer mkdir installer
     !ISCC! setup.iss
@@ -71,10 +71,10 @@ if "!ISCC!"=="" (
     echo  Done!
     echo.
     echo  Standalone EXE:
-    echo    bin\Release\net8.0-windows\win-x64\publish\LTTPMusicReplacer.exe
+    echo    bin\Release\net8.0-windows\win-x64\publish\LTTPEnhancementTools.exe
     echo.
     echo  Installer:
-    echo    installer\LTTPMusicReplacerSetup-1.0.0-win64.exe
+    echo    installer\LTTPEnhancementToolsSetup-1.0.0-win64.exe
     echo ============================================================
 )
 

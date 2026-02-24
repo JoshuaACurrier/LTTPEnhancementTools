@@ -2,10 +2,11 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 
-namespace LTTPMusicReplacer.Converters;
+namespace LTTPEnhancementTools.Converters;
 
 /// <summary>Converts null/empty to Visibility.Collapsed, non-null to Visible.</summary>
 public class NullToVisibilityConverter : IValueConverter
@@ -59,6 +60,34 @@ public class BoolToVisibilityInverseConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object? parameter, CultureInfo culture)
         => value is true ? Visibility.Collapsed : Visibility.Visible;
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}
+
+/// <summary>
+/// Converts a URL string to a BitmapImage using WPF's built-in async HTTP download.
+/// Returns null for null/empty strings.
+/// </summary>
+public class UrlToImageSourceConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not string url || string.IsNullOrEmpty(url)) return null;
+        try
+        {
+            var bmp = new BitmapImage();
+            bmp.BeginInit();
+            bmp.UriSource = new Uri(url, UriKind.Absolute);
+            bmp.DecodePixelWidth = 64; // decode at thumbnail size to save memory
+            bmp.EndInit();
+            return bmp;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture)
         => throw new NotSupportedException();

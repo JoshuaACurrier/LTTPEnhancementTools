@@ -1,8 +1,8 @@
 using System.IO;
 using System.Text.Json;
-using LTTPMusicReplacer.Models;
+using LTTPEnhancementTools.Models;
 
-namespace LTTPMusicReplacer.Services;
+namespace LTTPEnhancementTools.Services;
 
 public static class ConfigManager
 {

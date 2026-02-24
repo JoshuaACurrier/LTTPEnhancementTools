@@ -2,7 +2,7 @@ using System.IO;
 using System.Text;
 using NAudio.Wave;
 
-namespace LTTPMusicReplacer.Services;
+namespace LTTPEnhancementTools.Services;
 
 /// <summary>
 /// Converts common audio formats (MP3, WAV, WMA, WMV, AAC, M4A, AIFF) to MSU-1 PCM.

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace LTTPMusicReplacer.Models;
+namespace LTTPEnhancementTools.Models;
 
 public class SpriteEntry
 {
