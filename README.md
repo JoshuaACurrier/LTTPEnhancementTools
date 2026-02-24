@@ -34,7 +34,7 @@ A Windows desktop utility for enhancing **A Link to the Past Randomizer** runs. 
 
 - Windows 10 version 1809 (October 2018 Update) or later / Windows 11
 - 64-bit (x64) processor
-- ~200 MB disk space for the installed app
+- ~80 MB disk space for the installed app
 
 ---
 
@@ -161,7 +161,7 @@ dotnet run
 ```bash
 publish.bat
 ```
-This runs `dotnet publish` (produces a single ~155 MB self-contained EXE) and then compiles the Inno Setup installer if [Inno Setup 6](https://jrsoftware.org/isinfo.php) is installed.
+This runs `dotnet publish` (produces a single ~70 MB self-contained EXE) and then compiles the Inno Setup installer if [Inno Setup 6](https://jrsoftware.org/isinfo.php) is installed.
 
 Or publish manually:
 ```bash

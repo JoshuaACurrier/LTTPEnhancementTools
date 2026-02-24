@@ -17,6 +17,7 @@ dotnet publish -c Release -r win-x64 ^
     -p:PublishSingleFile=true ^
     -p:PublishTrimmed=false ^
     -p:IncludeNativeLibrariesForSelfExtract=true ^
+    -p:EnableCompressionInSingleFile=true ^
     -p:DebugType=none ^
     -p:DebugSymbols=false
 

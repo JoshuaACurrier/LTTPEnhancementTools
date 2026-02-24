@@ -520,16 +520,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     // ── Output Dir Browse ─────────────────────────────────────────────────
     private void BrowseOutputDir_Click(object sender, RoutedEventArgs e)
     {
-        using var dlg = new System.Windows.Forms.FolderBrowserDialog
+        var dlg = new Microsoft.Win32.OpenFolderDialog
         {
-            Description = "Select Output Folder for MSU Pack",
-            UseDescriptionForTitle = true,
-            ShowNewFolderButton = true
+            Title = "Select Output Folder for MSU Pack"
         };
 
-        if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        if (dlg.ShowDialog(this) == true)
         {
-            OutputDir = dlg.SelectedPath;
+            OutputDir = dlg.FolderName;
             _isDirty = true;
             AppendLog($"Output folder: {OutputDir}");
         }
@@ -639,21 +637,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     // ── Music Library ─────────────────────────────────────────────────────
     private void BrowseLibrary_Click(object sender, RoutedEventArgs e)
     {
-        using var dlg = new System.Windows.Forms.FolderBrowserDialog
+        var dlg = new Microsoft.Win32.OpenFolderDialog
         {
-            Description = "Select Music Library Folder",
-            UseDescriptionForTitle = true,
-            ShowNewFolderButton = true
+            Title = "Select Music Library Folder"
         };
 
-        if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+        if (dlg.ShowDialog(this) != true) return;
 
-        Directory.CreateDirectory(dlg.SelectedPath);
-        _library.SetFolder(dlg.SelectedPath);
-        SettingsManager.Save(new AppSettings { LibraryFolder = dlg.SelectedPath });
+        Directory.CreateDirectory(dlg.FolderName);
+        _library.SetFolder(dlg.FolderName);
+        SettingsManager.Save(new AppSettings { LibraryFolder = dlg.FolderName });
         OnPropertyChanged(nameof(LibraryFolder));
         OnPropertyChanged(nameof(LibrarySongCount));
-        AppendLog($"Music library: {dlg.SelectedPath} ({_library.Entries.Count} song(s) found)");
+        AppendLog($"Music library: {dlg.FolderName} ({_library.Entries.Count} song(s) found)");
     }
 
     private void LibraryPick_Click(object sender, RoutedEventArgs e)
