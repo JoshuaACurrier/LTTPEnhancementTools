@@ -646,7 +646,7 @@
                                                     Tag="{Binding}"
                                                     Click="LibraryItemPlay_Click"
                                                     ToolTip="Preview this song"
-                                                    IsEnabled="{Binding IsCached}">
+                                                    IsEnabled="{Binding IsPlayable}">
                                                 <TextBlock Text="▶" FontSize="8"/>
                                             </Button>
 

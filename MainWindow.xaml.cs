@@ -412,7 +412,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             Title = "Save Configuration",
             Filter = "JSON Config (*.json)|*.json|All Files (*.*)|*.*",
             DefaultExt = ".json",
-            FileName = "msu-config"
+            FileName = "msu-config",
+            InitialDirectory = Path.GetDirectoryName(Environment.ProcessPath!) ?? string.Empty
         };
 
         if (dlg.ShowDialog(this) != true) return;
@@ -437,7 +438,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             Title = "Load Configuration",
             Filter = "JSON Config (*.json)|*.json|All Files (*.*)|*.*",
-            CheckFileExists = true
+            CheckFileExists = true,
+            InitialDirectory = Path.GetDirectoryName(Environment.ProcessPath!) ?? string.Empty
         };
 
         if (dlg.ShowDialog(this) != true) return;

@@ -22,4 +22,5 @@ public class LibraryEntry
     public string AssignablePath   => CachedPcmPath ?? _sourcePath;
     public bool   NeedsConversion  => !IsPcm && CachedPcmPath is null;
     public bool   IsCached         => CachedPcmPath is not null;
+    public bool   IsPlayable       => IsPcm || IsCached;
 }
