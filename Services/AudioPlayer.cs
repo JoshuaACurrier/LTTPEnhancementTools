@@ -27,20 +27,28 @@ public class AudioPlayer : IDisposable
 
         try
         {
-            _stream = new FileStream(pcmPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            _stream.Seek(8, SeekOrigin.Begin); // skip MSU-1 header
-
-            var waveFormat = new WaveFormat(44100, 16, 2); // 44.1kHz, 16-bit, stereo
-            var waveStream = new RawSourceWaveStream(_stream, waveFormat);
-
-            _output = new WaveOutEvent();
-            _output.Init(waveStream);
-            _output.PlaybackStopped += (_, _) =>
+            var stream = new FileStream(pcmPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            try
             {
-                PlaybackStopped?.Invoke(this, EventArgs.Empty);
-            };
-            _output.Play();
-            return null;
+                stream.Seek(8, SeekOrigin.Begin); // skip MSU-1 header
+                var waveFormat = new WaveFormat(44100, 16, 2); // 44.1kHz, 16-bit, stereo
+                var waveStream = new RawSourceWaveStream(stream, waveFormat);
+
+                _stream = stream;
+                _output = new WaveOutEvent();
+                _output.Init(waveStream);
+                _output.PlaybackStopped += (_, _) =>
+                {
+                    PlaybackStopped?.Invoke(this, EventArgs.Empty);
+                };
+                _output.Play();
+                return null;
+            }
+            catch
+            {
+                stream.Dispose();
+                throw;
+            }
         }
         catch (Exception ex)
         {

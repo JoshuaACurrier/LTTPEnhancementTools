@@ -335,17 +335,25 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    // ── Playback helpers ──────────────────────────────────────────────────
+    /// <summary>Stops the current slot preview and clears playback state.</summary>
+    private void StopCurrentPlayback()
+    {
+        if (_playingSlot is not null)
+        {
+            _audio.Stop();
+            _playingSlot.IsPlaying = false;
+            _playingSlot = null;
+        }
+    }
+
     // ── Clear ─────────────────────────────────────────────────────────────
     private void Clear_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.CommandParameter is TrackSlot slot)
         {
             if (_playingSlot == slot)
-            {
-                _audio.Stop();
-                slot.IsPlaying = false;
-                _playingSlot = null;
-            }
+                StopCurrentPlayback();
             slot.PcmPath = null;
             slot.ValidationError = null;
             _isDirty = true;
@@ -367,13 +375,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             }
             else if (slot.PcmPath is not null)
             {
-                // Stop any currently playing slot
-                if (_playingSlot is not null)
-                {
-                    _audio.Stop();
-                    _playingSlot.IsPlaying = false;
-                    _playingSlot = null;
-                }
+                StopCurrentPlayback();
 
                 string? error = _audio.Play(slot.PcmPath);
                 if (error is not null)
@@ -466,13 +468,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ApplyConfig(AppConfig config)
     {
-        // Stop playback before changing state
-        if (_playingSlot is not null)
-        {
-            _audio.Stop();
-            _playingSlot.IsPlaying = false;
-            _playingSlot = null;
-        }
+        StopCurrentPlayback();
 
         // Clear all tracks
         foreach (var t in Tracks) { t.PcmPath = null; t.ValidationError = null; }
@@ -544,13 +540,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (_romPath is null || _outputDir is null) return;
 
-        // Stop playback
-        if (_playingSlot is not null)
-        {
-            _audio.Stop();
-            _playingSlot.IsPlaying = false;
-            _playingSlot = null;
-        }
+        StopCurrentPlayback();
 
         _isApplying = true;
         OnPropertyChanged(nameof(CanApply));
@@ -707,13 +697,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (sender is not FrameworkElement el || el.Tag is not LibraryEntry entry) return;
 
-        // Stop any currently playing slot preview
-        if (_playingSlot is not null)
-        {
-            _audio.Stop();
-            _playingSlot.IsPlaying = false;
-            _playingSlot = null;
-        }
+        StopCurrentPlayback();
 
         _libraryPlayingEntry = entry;
         string? err = _audio.Play(entry.AssignablePath);
@@ -757,7 +741,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         else
         {
             // Convert and cache
-            string cacheDir = Path.Combine(_library.LibraryFolder!, "_cache");
+            if (_library.LibraryFolder is null) return;
+            string cacheDir = Path.Combine(_library.LibraryFolder, "_cache");
             Directory.CreateDirectory(cacheDir);
             string destPath = _library.GetCacheTargetPath(entry.SourcePath);
 

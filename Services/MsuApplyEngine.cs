@@ -31,7 +31,7 @@ public class ApplyEngine
         CancellationToken ct = default)
     {
         var sortedSlots = req.Tracks
-            .OrderBy(kv => int.Parse(kv.Key))
+            .OrderBy(kv => int.TryParse(kv.Key, out int n) ? n : int.MaxValue)
             .ToList();
 
         bool hasSprite = !string.IsNullOrEmpty(req.SpriteSourcePath);
