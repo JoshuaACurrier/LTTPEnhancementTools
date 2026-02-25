@@ -19,6 +19,7 @@
   <ItemGroup>
     <Resource Include="Resources\icon.ico" />
     <Resource Include="Resources\trackCatalog.json" />
+    <Resource Include="Resources\lttpEnhancedLogo.png" />
   </ItemGroup>
 
 </Project>

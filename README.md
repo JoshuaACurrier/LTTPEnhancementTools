@@ -1,5 +1,7 @@
 # ALttP Enhancement Tools
 
+![LTTP Enhanced](Resources/lttpEnhancedLogo.png)
+
 A Windows desktop utility for enhancing **A Link to the Past Randomizer** runs. Manage MSU-1 music packs, replace the Link sprite, and launch everything — emulator, SNI, and community tracker — in one click.
 
 > **Bring Your Own ROM.** This tool requires you to provide your own legally-obtained ALttP ROM. It does not include, distribute, or circumvent any copyrighted game data. See [Legal & Copyright](#legal--copyright) below.

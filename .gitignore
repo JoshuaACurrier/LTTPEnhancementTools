@@ -34,3 +34,7 @@ desktop.ini
 # Logs / temp
 *.log
 *.tmp
+
+# Claude Code
+.claude/
+nul

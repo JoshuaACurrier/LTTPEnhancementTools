@@ -28,7 +28,8 @@
                 Background="#14141A"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="0,0,0,1"
-                Padding="16,10">
+                MinHeight="80"
+                Padding="16,6">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -36,35 +37,26 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0"
-                           Text="ALttP Enhancement Tools"
-                           FontSize="15" FontWeight="Bold"
-                           Foreground="{StaticResource TextBrush}"
-                           VerticalAlignment="Center"/>
+                <!-- Logo left-aligned -->
+                <Image Grid.Column="0"
+                       Source="pack://application:,,,/Resources/lttpEnhancedLogo.png"
+                       Height="100"
+                       VerticalAlignment="Center"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
 
-                <!-- ROM chip (shown when ROM is selected) -->
+                <!-- Version badge -->
                 <Border Grid.Column="2"
                         Background="{StaticResource SurfaceAltBrush}"
                         BorderBrush="{StaticResource BorderBrush}"
                         BorderThickness="1"
                         CornerRadius="4"
-                        Padding="10,4"
-                        Visibility="{Binding RomBaseName, Converter={StaticResource NullToVis}}"
-                        VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding RomBaseName}"
-                                   FontWeight="SemiBold" FontSize="12"
-                                   Foreground="{StaticResource TextBrush}"
-                                   VerticalAlignment="Center"
-                                   MaxWidth="300"
-                                   TextTrimming="CharacterEllipsis"/>
-                        <Button Content="Change"
-                                Style="{StaticResource DarkButton}"
-                                Margin="8,0,0,0"
-                                Padding="6,2"
-                                FontSize="11"
-                                Click="SelectRom_Click"/>
-                    </StackPanel>
+                        Padding="8,3"
+                        VerticalAlignment="Top"
+                        Margin="0,2,0,0">
+                    <TextBlock Text="v2.1.0"
+                               FontSize="11"
+                               Foreground="{StaticResource TextMutedBrush}"/>
                 </Border>
             </Grid>
         </Border>
