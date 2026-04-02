@@ -1,4 +1,4 @@
-# ALttP Enhancement Tools — Help & FAQ
+# Archipelago LTTP Enhancer — Help & FAQ
 
 ---
 
@@ -6,7 +6,7 @@
 
 ### What do I need to use this tool?
 - **Windows 10 (1809+) or Windows 11**, 64-bit
-- **Your own ALttP ROM** — the app does not include one. You need a legally-obtained copy of *A Link to the Past* (`.sfc` or `.smc`). Most users use a ROM patched by the [ALttP Randomizer](https://alttpr.com).
+- **Your own ALttP ROM** — the app does not include one. You need a legally-obtained copy of *A Link to the Past* (`.sfc` or `.smc`). Archipelago generates a patched ROM from your `.aplttp` patch file.
 - **Music files** (optional) — MP3, WAV, M4A, AAC, WMA, or PCM files you want to use as in-game music
 - **A Link sprite** (optional) — a `.zspr` file from [alttpr.com/sprites](https://alttpr.com/sprites) or elsewhere
 
@@ -104,7 +104,7 @@ Include this file when reporting an issue.
 
 ### The ROM won't load / "file not found" error
 - Make sure the `.sfc`/`.smc` file exists at the path shown
-- If you moved the ROM after selecting it, use **Select ROM** to re-point to the new location
+- If you moved the ROM after selecting it, use **Open Patch...** to re-point to the new location
 
 ### Tracks aren't playing in-game
 - Confirm your emulator supports MSU-1. BizHawk and Snes9x (recent versions) both do.
@@ -113,7 +113,7 @@ Include this file when reporting an issue.
 
 ### The sprite isn't showing in-game
 - The sprite must be in `.zspr` or `.spr` format
-- Make sure you clicked **Apply to ROM** after selecting the sprite — selecting it in the UI does not patch the ROM until you apply
+- Make sure you clicked **Enhance & Launch** after selecting the sprite — selecting it in the UI does not patch the ROM until you apply
 
 ### The sprite browser shows loading animations but no images
 This usually means the app can't reach the internet. Check your network connection. If the browser has loaded before, the cached images should still appear.
@@ -157,7 +157,7 @@ No. The track catalog, sprite injection offsets, and MSU-1 slot numbering are sp
 Yes — click **Change Location...** in the Music Library toolbar and point it to any folder. The app updates `settings.json` with the new path. Your previously-converted PCM cache stays in the old `_cache/` subfolder; re-assign files from the new location to rebuild it.
 
 ### Can I contribute a new feature or report a bug?
-Open an issue or pull request on [GitHub](../../issues). Please include the crash log (`%LocalAppData%\LTTPEnhancementTools\crash.log`) for any crash reports.
+Open an issue or pull request on [GitHub](../../issues). Please include the crash log (`%LocalAppData%\LTTPEnhancementTools\crash.log`) for any bug reports.
 
 ---
 

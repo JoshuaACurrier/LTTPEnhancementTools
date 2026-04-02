@@ -1,4 +1,4 @@
-; ALttP MSU-1 Music Switcher — Inno Setup Script
+; Archipelago LTTP Enhancer — Inno Setup Script
 ; Compile with: "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
 ; Or just run publish.bat which handles everything automatically.
 ; Pass /dMyVersion=X.Y.Z to override the version at build time.
@@ -9,9 +9,9 @@
 
 [Setup]
 AppId={{7C4B2A8F-3D1E-4F9C-A6B5-8E2D7F3C5A1B}
-AppName=ALttP MSU-1 Music Switcher
+AppName=Archipelago LTTP Enhancer
 AppVersion={#MyVersion}
-AppVerName=ALttP MSU-1 Music Switcher {#MyVersion}
+AppVerName=Archipelago LTTP Enhancer {#MyVersion}
 AppPublisher=LTTPEnhancementTools
 AppPublisherURL=
 AppSupportURL=
@@ -19,7 +19,7 @@ AppUpdatesURL=
 
 ; Install to per-user Programs folder — no admin rights required
 DefaultDirName={localappdata}\Programs\LTTPEnhancementTools
-DefaultGroupName=ALttP MSU-1 Music Switcher
+DefaultGroupName=Archipelago LTTP Enhancer
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 
@@ -47,7 +47,7 @@ ArchitecturesInstallIn64BitMode=x64
 ; Misc
 DisableProgramGroupPage=yes
 DisableWelcomePage=no
-UninstallDisplayName=ALttP MSU-1 Music Switcher
+UninstallDisplayName=Archipelago LTTP Enhancer
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -63,20 +63,20 @@ Source: "bin\Release\net8.0-windows\win-x64\publish\LTTPEnhancementTools.exe"; \
 
 [Icons]
 ; Start Menu
-Name: "{group}\ALttP MSU-1 Music Switcher"; \
+Name: "{group}\Archipelago LTTP Enhancer"; \
     Filename: "{app}\LTTPEnhancementTools.exe"; \
     Comment: "Manage MSU-1 music packs for ALttP Randomizer"
 
-Name: "{group}\Uninstall ALttP MSU-1 Music Switcher"; \
+Name: "{group}\Uninstall Archipelago LTTP Enhancer"; \
     Filename: "{uninstallexe}"
 
 ; Desktop (optional, unchecked by default)
-Name: "{autodesktop}\ALttP MSU-1 Music Switcher"; \
+Name: "{autodesktop}\Archipelago LTTP Enhancer"; \
     Filename: "{app}\LTTPEnhancementTools.exe"; \
     Tasks: desktopicon
 
 [Run]
 ; Offer to launch after install
 Filename: "{app}\LTTPEnhancementTools.exe"; \
-    Description: "Launch ALttP MSU-1 Music Switcher"; \
+    Description: "Launch Archipelago LTTP Enhancer"; \
     Flags: nowait postinstall skipifsilent

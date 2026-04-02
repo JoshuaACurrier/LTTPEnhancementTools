@@ -12,4 +12,7 @@ public class AutoSaveState
 
     [JsonPropertyName("lastPlaylistPath")]
     public string LastPlaylistPath { get; set; } = string.Empty;
+
+    [JsonPropertyName("lastPatchPath")]
+    public string LastPatchPath { get; set; } = string.Empty;
 }

@@ -48,11 +48,11 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "ALttP MSU-1 Music Switcher ${{ steps.version.outputs.VERSION }}"
+          name: "Archipelago LTTP Enhancer ${{ steps.version.outputs.VERSION }}"
           draft: false
           prerelease: false
           body: |
-            ## ALttP MSU-1 Music Switcher ${{ steps.version.outputs.VERSION }}
+            ## Archipelago LTTP Enhancer ${{ steps.version.outputs.VERSION }}
 
             ### Downloads
             | File | Description |

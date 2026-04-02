@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:LTTPEnhancementTools.Converters"
         xmlns:models="clr-namespace:LTTPEnhancementTools.Models"
-        Title="ALttP Enhancement Tools"
+        Title="Archipelago LTTP Enhancer"
         Icon="Resources/icon.ico"
         Width="760" MinWidth="520" MinHeight="380"
         SizeToContent="Height" MaxHeight="900"
@@ -54,7 +54,7 @@
                         Padding="8,3"
                         VerticalAlignment="Top"
                         Margin="0,2,0,0">
-                    <TextBlock Text="v2.1.0"
+                    <TextBlock Text="v3.0.0"
                                FontSize="11"
                                Foreground="{StaticResource TextMutedBrush}"/>
                 </Border>
@@ -74,37 +74,38 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <Button Grid.Column="0"
-                            Content="Select ROM..."
+                            Content="Open Patch..."
                             Style="{StaticResource WarmButton}"
                             Padding="12,6"
-                            Click="SelectRom_Click"/>
+                            Click="SelectPatch_Click"/>
 
                     <TextBlock Grid.Column="1"
-                               Text="{Binding AssignedCountText}"
                                FontSize="12"
                                Foreground="{StaticResource TextMutedBrush}"
                                VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
+                               HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="{Binding AssignedCountText}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasArchipelagoMetadata}" Value="True">
+                                        <Setter Property="Text" Value="{Binding ArchipelagoInfoText}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
                     <Button Grid.Column="2"
-                            Content="Apply ROM"
+                            Content="Enhance &amp; Launch"
                             Style="{StaticResource AccentButton}"
                             Padding="14,6"
-                            Margin="0,0,8,0"
                             IsEnabled="{Binding CanApply}"
-                            Click="Apply_Click"/>
-
-                    <Button Grid.Column="3"
-                            Content="Auto Launch"
-                            Style="{StaticResource DarkButton}"
-                            Padding="12,6"
-                            IsEnabled="{Binding CanLaunch}"
-                            Click="AutoLaunch_Click"
-                            ToolTip="Launch the output ROM with companion tools"/>
+                            Click="EnhanceAndLaunch_Click"
+                            ToolTip="Apply music &amp; sprite, then launch Archipelago + tracker + emulator"/>
                 </Grid>
 
                 <!-- Success message -->
@@ -672,8 +673,6 @@
                         <Grid Margin="8,6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0"
@@ -684,20 +683,7 @@
                             <TextBlock Grid.Column="1"
                                        Text="CONFIGURATION"
                                        Style="{StaticResource SectionLabel}"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="2"
-                                       Text="Output Name:"
-                                       FontSize="12"
-                                       Foreground="{StaticResource TextMutedBrush}"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,6,0"/>
-                            <TextBox Grid.Column="3"
-                                     Style="{StaticResource DarkTextBox}"
-                                     Text="{Binding OutputBaseName, UpdateSourceTrigger=PropertyChanged}"
-                                     FontFamily="Consolas"
-                                     FontSize="12"
-                                     ToolTip="File name stem used for all output files (e.g. myrom → myrom.sfc, myrom.msu, myrom-2.pcm)"/>
+                                       VerticalAlignment="Center"/>
                         </Grid>
 
                         <!-- Expandable: Library + Output folder -->
@@ -756,54 +742,6 @@
                                             ToolTip="Move the Music Library to a different folder"/>
                                 </Grid>
 
-                                <!-- Output Folder -->
-                                <TextBlock Text="OUTPUT FOLDER"
-                                           Style="{StaticResource SectionLabel}"/>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0"
-                                            Background="{StaticResource SurfaceAltBrush}"
-                                            BorderBrush="{StaticResource BorderBrush}"
-                                            BorderThickness="1"
-                                            CornerRadius="4"
-                                            Padding="8,4"
-                                            Margin="0,0,6,0">
-                                        <TextBlock Foreground="{StaticResource TextSecondaryBrush}"
-                                                   FontFamily="Consolas" FontSize="11"
-                                                   VerticalAlignment="Center"
-                                                   TextTrimming="CharacterEllipsis">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="{Binding OutputDir}"/>
-                                                    <Setter Property="FontStyle" Value="Normal"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding OutputDir}" Value="{x:Null}">
-                                                            <Setter Property="Text" Value="Auto-set when ROM is selected"/>
-                                                            <Setter Property="FontStyle" Value="Italic"/>
-                                                            <Setter Property="Foreground" Value="{StaticResource TextFaintBrush}"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </Border>
-                                    <Button Grid.Column="1"
-                                            Content="Browse..."
-                                            Style="{StaticResource DarkButton}"
-                                            Padding="8,4"
-                                            Margin="0,0,6,0"
-                                            Click="BrowseOutputDir_Click"/>
-                                    <Button Grid.Column="2"
-                                            Content="🗑"
-                                            Style="{StaticResource ClearButton}"
-                                            Padding="8,4"
-                                            Click="CleanOutputFolder_Click"
-                                            ToolTip="Delete all files in the output folder"/>
-                                </Grid>
                             </StackPanel>
                         </Border>
                     </StackPanel>

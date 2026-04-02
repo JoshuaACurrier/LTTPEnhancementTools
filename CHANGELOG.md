@@ -1,6 +1,24 @@
 # Changelog
 
-All notable changes to ALttP Enhancement Tools are documented here.
+All notable changes to Archipelago LTTP Enhancer (formerly ALttP Enhancement Tools) are documented here.
+
+---
+
+## [3.0.0] — 2026-04-01
+
+### Changed
+- **Rebranded to Archipelago LTTP Enhancer** — the tool is now focused on enhancing Archipelago LTTP runs
+- **`.aplttp` patch loading** — open your Archipelago patch file directly; extracts player name, server address, and game metadata; auto-locates the generated `.sfc` ROM
+- **In-place enhancement** — sprite patches the ROM directly and MSU files are written next to it; no more separate output folder
+- **Combined Enhance & Launch** — single button replaces Apply ROM + Auto Launch; applies music + sprite then launches SNI, Archipelago Launcher, tracker, and emulator
+- **Server auto-fill** — Room ID is populated from patch metadata
+- **Session persistence** — last patch file is remembered and restored on next launch
+
+### Removed
+- Output Name textbox (auto-derived from patch filename)
+- Output Folder browser (files go next to the ROM)
+- Vanilla ROM size check (not applicable to Archipelago-generated ROMs)
+- Separate Apply ROM and Auto Launch buttons (replaced by Enhance & Launch)
 
 ---
 

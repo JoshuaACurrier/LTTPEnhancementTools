@@ -1,7 +1,7 @@
 <Window x:Class="LTTPEnhancementTools.SetupWizardWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="LTTP Enhancement Tools — Setup"
+        Title="Archipelago LTTP Enhancer — Setup"
         Width="540" Height="420"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
@@ -61,7 +61,7 @@
             <!-- Step 0: Welcome -->
             <StackPanel x:Name="Step0" Visibility="Visible">
                 <TextBlock Style="{StaticResource StepLabel}" Text="STEP 1 OF 5"/>
-                <TextBlock Style="{StaticResource StepTitle}" Text="Welcome to LTTP Enhancement Tools"/>
+                <TextBlock Style="{StaticResource StepTitle}" Text="Welcome to Archipelago LTTP Enhancer"/>
                 <TextBlock Style="{StaticResource StepDescription}">
                     This wizard will help you configure the one-click launch feature.
                     You can point the tool to your emulator, Archipelago connector script,

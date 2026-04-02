@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using LTTPEnhancementTools.Models;
 using LTTPEnhancementTools.Services;
+using System.IO.Compression;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using Microsoft.Win32;
@@ -43,6 +44,20 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private bool _isMusicExpanded;
     private bool _isConfigExpanded;
     private bool _isAutoLauncherExpanded;
+    private ArchipelagoMetadata? _archipelagoMetadata;
+
+    public ArchipelagoMetadata? ArchipelagoInfo
+    {
+        get => _archipelagoMetadata;
+        private set { _archipelagoMetadata = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasArchipelagoMetadata)); OnPropertyChanged(nameof(ArchipelagoInfoText)); }
+    }
+
+    public bool HasArchipelagoMetadata => _archipelagoMetadata is not null;
+
+    public string ArchipelagoInfoText =>
+        _archipelagoMetadata is not null
+            ? $"Player: {_archipelagoMetadata.PlayerName} (P{_archipelagoMetadata.Player})  |  Server: {_archipelagoMetadata.Server}"
+            : string.Empty;
 
     public string? EmulatorPath
     {
@@ -355,6 +370,23 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             }
         }
 
+        // Auto-restore last patch
+        string? savedPatch = autoState.LastPatchPath.NullIfEmpty();
+        if (savedPatch is not null && File.Exists(savedPatch))
+        {
+            var (metadata, _) = ArchipelagoPatchReader.ReadPatch(savedPatch);
+            if (metadata is not null && File.Exists(metadata.ExpectedSfcPath))
+            {
+                _archipelagoMetadata = metadata;
+                _romPath = metadata.ExpectedSfcPath;
+                _romBaseName = Path.GetFileNameWithoutExtension(metadata.ExpectedSfcPath);
+                _outputBaseName = _romBaseName;
+                _outputDir = Path.GetDirectoryName(metadata.ExpectedSfcPath)!;
+                if (!string.IsNullOrEmpty(metadata.Server) && string.IsNullOrEmpty(_seedUrl))
+                    _seedUrl = metadata.Server;
+            }
+        }
+
         OnPropertyChanged(nameof(HasSprite));
         OnPropertyChanged(nameof(SpriteDisplayName));
         OnPropertyChanged(nameof(IsRandomSprite));
@@ -365,6 +397,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         OnPropertyChanged(nameof(CurrentPlaylistDisplayName));
         OnPropertyChanged(nameof(LibraryFolder));
         OnPropertyChanged(nameof(LibrarySongCount));
+        OnPropertyChanged(nameof(HasArchipelagoMetadata));
+        OnPropertyChanged(nameof(ArchipelagoInfoText));
+        OnPropertyChanged(nameof(HasRom));
+        OnPropertyChanged(nameof(RomBaseName));
+        OnPropertyChanged(nameof(OutputBaseName));
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -487,36 +524,123 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private record CatalogEntry(int Slot, string Name, string Type = "music");
 
-    // ── ROM Selection ─────────────────────────────────────────────────────
-    private void SelectRom_Click(object sender, RoutedEventArgs e)
+    // ── Patch / ROM Selection ────────────────────────────────────────────
+    private void SelectPatch_Click(object sender, RoutedEventArgs e)
     {
         var dlg = new OpenFileDialog
         {
-            Title = "Select ALttP Randomizer ROM",
-            Filter = "SNES ROM Files (*.sfc;*.smc;*.snes)|*.sfc;*.smc;*.snes|All Files (*.*)|*.*",
+            Title = "Select Archipelago Patch or ROM",
+            Filter = "Archipelago Patch (*.aplttp)|*.aplttp|SNES ROM (*.sfc;*.smc)|*.sfc;*.smc|All Files (*.*)|*.*",
             CheckFileExists = true
         };
 
         if (dlg.ShowDialog(this) == true)
-        {
-            long fileSize = new FileInfo(dlg.FileName).Length;
-            long effectiveSize = (fileSize % 1024 == 512) ? fileSize - 512 : fileSize;
+            LoadPatchOrRom(dlg.FileName);
+    }
 
-            if (effectiveSize < 2_097_152)
+    private void LoadPatchOrRom(string filePath)
+    {
+        string ext = Path.GetExtension(filePath).ToLowerInvariant();
+
+        if (ext == ".aplttp")
+        {
+            var (metadata, error) = ArchipelagoPatchReader.ReadPatch(filePath);
+            if (error is not null)
             {
-                MessageBox.Show(
-                    "This appears to be a vanilla (unpatched) ROM.\n\n" +
-                    "MSU-1 music packs require a randomized ROM. " +
-                    "Please generate your randomized ROM first, then select it here.",
-                    "Vanilla ROM Detected",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                MessageBox.Show(error, "Patch Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            _romPath = dlg.FileName;
-            RomBaseName = Path.GetFileNameWithoutExtension(dlg.FileName);
+            ArchipelagoInfo = metadata;
+
+            if (!File.Exists(metadata!.ExpectedSfcPath))
+            {
+                // SFC not generated yet — offer to launch Archipelago Launcher
+                if (!string.IsNullOrEmpty(_archipelagoLauncherPath) && File.Exists(_archipelagoLauncherPath))
+                {
+                    var answer = MessageBox.Show(
+                        $"The ROM has not been generated yet.\n\n" +
+                        $"Expected: {Path.GetFileName(metadata.ExpectedSfcPath)}\n\n" +
+                        "Would you like to open the patch in Archipelago Launcher to generate it?",
+                        "ROM Not Found",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+
+                    if (answer == MessageBoxResult.Yes)
+                    {
+                        try
+                        {
+                            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = _archipelagoLauncherPath,
+                                Arguments = $"\"{filePath}\"",
+                                UseShellExecute = true
+                            })?.Dispose();
+                            AppendLog("Archipelago Launcher started. Select the patch again after the ROM is generated.");
+                        }
+                        catch (Exception ex)
+                        {
+                            AppendLog($"[ERROR] Failed to launch: {ex.Message}");
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"The ROM has not been generated yet.\n\n" +
+                        $"Expected: {Path.GetFileName(metadata.ExpectedSfcPath)}\n\n" +
+                        "Open the .aplttp file in Archipelago Launcher first, then select it here again.",
+                        "ROM Not Found",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                return;
+            }
+
+            // SFC exists — set it as the ROM
+            _romPath = metadata.ExpectedSfcPath;
+            RomBaseName = Path.GetFileNameWithoutExtension(metadata.ExpectedSfcPath);
             OutputBaseName = RomBaseName;
+            OutputDir = Path.GetDirectoryName(metadata.ExpectedSfcPath)!;
+
+            // Auto-populate server/room
+            if (!string.IsNullOrEmpty(metadata.Server))
+            {
+                SeedUrl = metadata.Server;
+            }
+
+            SaveAutoState();
+            AppendLog($"Patch loaded: {metadata.PlayerName} (P{metadata.Player}) on {metadata.Server}");
+            AppendLog($"ROM: {_romPath}");
+        }
+        else
+        {
+            // Direct .sfc/.smc selection
+            _romPath = filePath;
+            RomBaseName = Path.GetFileNameWithoutExtension(filePath);
+            OutputBaseName = RomBaseName;
+            OutputDir = Path.GetDirectoryName(filePath)!;
+
+            // Try to find a matching .aplttp for metadata
+            string dir = Path.GetDirectoryName(filePath)!;
+            string stem = Path.GetFileNameWithoutExtension(filePath);
+            string aplttpPath = Path.Combine(dir, stem + ".aplttp");
+            if (File.Exists(aplttpPath))
+            {
+                var (metadata, _) = ArchipelagoPatchReader.ReadPatch(aplttpPath);
+                if (metadata is not null)
+                {
+                    ArchipelagoInfo = metadata;
+                    if (!string.IsNullOrEmpty(metadata.Server))
+                        SeedUrl = metadata.Server;
+                    AppendLog($"Patch metadata found: {metadata.PlayerName} (P{metadata.Player})");
+                }
+            }
+            else
+            {
+                ArchipelagoInfo = null;
+            }
+
             AppendLog($"ROM selected: {_romPath}");
         }
     }
@@ -1108,6 +1232,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             LastSpritePath       = _spritePath        ?? string.Empty,
             LastSpritePreviewUrl = _spritePreviewUrl   ?? string.Empty,
             LastPlaylistPath     = _currentPlaylistPath ?? string.Empty,
+            LastPatchPath        = _archipelagoMetadata?.PatchFilePath ?? string.Empty,
         });
 
     // ── Output Dir Browse ─────────────────────────────────────────────────
@@ -1206,7 +1331,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             }
         }
 
-        var req = new ApplyRequest(_romPath, _outputDir, tracks, OverwriteMode.Ask, OutputBaseName?.Trim(), resolvedSpritePath);
+        var req = new ApplyRequest(_romPath, _outputDir, tracks, OverwriteMode.Ask, OutputBaseName?.Trim(), resolvedSpritePath, InPlace: true);
 
         var progress = new Progress<(string step, int current, int total)>(p =>
         {
@@ -1223,10 +1348,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             ApplySuccessText.Text = $"Done! {result.FilesWritten.Count} file(s) written.";
             ApplySuccessText.Visibility = Visibility.Visible;
 
-            // Track the output ROM for the Launch button
-            string romExt = Path.GetExtension(_romPath!);
-            string baseName = !string.IsNullOrWhiteSpace(_outputBaseName) ? _outputBaseName.Trim() : Path.GetFileNameWithoutExtension(_romPath!);
-            _lastOutputRomPath = Path.Combine(_outputDir!, baseName + romExt);
+            // Track the output ROM for the Launch button (in-place mode uses the source ROM directly)
+            _lastOutputRomPath = _romPath;
             OnPropertyChanged(nameof(CanLaunch));
 
             AppendLog($"Apply succeeded. {result.FilesWritten.Count} file(s) written to: {_outputDir}");
@@ -1263,16 +1386,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-    private async void Apply_Click(object sender, RoutedEventArgs e) => await ApplyCoreAsync();
-
-    private async void AutoLaunch_Click(object sender, RoutedEventArgs e)
+    private async void EnhanceAndLaunch_Click(object sender, RoutedEventArgs e)
     {
-        bool hasTracker = !string.IsNullOrEmpty(_trackerUrl);
-        bool hasArchipelago = !string.IsNullOrEmpty(_sniPath) || !string.IsNullOrEmpty(_archipelagoLauncherPath);
-
-        var dialog = new AutoLaunchDialog(hasTracker, hasArchipelago) { Owner = this };
-        if (dialog.ShowDialog() == true)
-            await LaunchRomCoreAsync(dialog.SelectedOption);
+        bool applied = await ApplyCoreAsync();
+        if (applied)
+            await LaunchRomCoreAsync(AutoLaunchOption.ArchipelagoAndTracker);
     }
 
     // ── Conflict Modal ────────────────────────────────────────────────────

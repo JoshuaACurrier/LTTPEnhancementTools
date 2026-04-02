@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title ALttP MSU-1 Music Switcher — Build + Package
+title Archipelago LTTP Enhancer — Build + Package
 
 echo.
 echo ============================================================
-echo  ALttP MSU-1 Music Switcher — Build ^& Package
+echo  Archipelago LTTP Enhancer — Build ^& Package
 echo ============================================================
 echo.
 

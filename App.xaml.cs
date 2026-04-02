@@ -60,7 +60,7 @@ public partial class App : Application
             $"An unexpected error occurred:\r\n\r\n{ex.Message}\r\n\r\n" +
             $"A crash log has been saved to:\r\n{CrashLogPath}\r\n\r\n" +
             "Please share this log when reporting the issue.",
-            "ALttP MSU-1 Music Switcher — Error",
+            "Archipelago LTTP Enhancer — Error",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
     }

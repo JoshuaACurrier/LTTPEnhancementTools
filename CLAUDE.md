@@ -40,6 +40,10 @@ Single-window WPF application targeting .NET 8.0 Windows x64. `MainWindow` acts 
 
 **Track catalog** (61 ALttP slot-to-name mappings) is loaded from `Resources/trackCatalog.json` as an embedded WPF resource (`pack://application:,,,/Resources/trackCatalog.json`). The same pattern applies to `Resources/icon.ico` — it must be a `<Resource>` build action in the .csproj to work in single-file publish.
 
+### Archipelago Patch Loading (ArchipelagoPatchReader)
+
+`.aplttp` files are ZIP archives containing `archipelago.json` (metadata: server, player, game) and `delta.bsdiff4` (ROM patch). The tool does NOT apply the bsdiff4 patch — Archipelago Launcher does that. `ArchipelagoPatchReader.ReadPatch()` extracts metadata and computes the expected `.sfc` path (same directory, same stem).
+
 ### Apply Workflow (MsuApplyEngine)
 
 `RunAsync` steps in order:
@@ -47,8 +51,8 @@ Single-window WPF application targeting .NET 8.0 Windows x64. `MainWindow` acts 
 2. Compute output filenames using `OutputBaseName` (or fallback to ROM stem)
 3. Detect conflicts → fire event → wait for resolution
 4. `Directory.CreateDirectory`
-5. Copy ROM to `{baseName}{romExt}`
-6. *(Optional)* `SpriteApplier.Apply` patches the copied ROM in-place
+5. If `InPlace`: use ROM directly; otherwise copy ROM to `{baseName}{romExt}`
+6. *(Optional)* `SpriteApplier.Apply` patches the ROM in-place
 7. Write empty `.msu` marker file
 8. Copy each PCM to `{baseName}-{slot}.pcm` (sorted by slot number)
 
@@ -78,8 +82,8 @@ JSON fields: `version` (int, always 1), `romPath`, `spritePath`, `tracks` (objec
 ## Project Structure
 
 ```
-Models/          TrackSlot, AppConfig, SpriteEntry
-Services/        AudioPlayer, ConfigManager, MsuApplyEngine, PcmConverter, PcmValidator, SpriteApplier
+Models/          TrackSlot, ArchipelagoMetadata, AppConfig, SpriteEntry
+Services/        ArchipelagoPatchReader, AudioPlayer, ConfigManager, MsuApplyEngine, PcmConverter, PcmValidator, SpriteApplier
 Converters/      ValueConverters.cs (5 WPF IValueConverter implementations)
 Resources/       Styles.xaml (dark theme), trackCatalog.json, icon.ico
 App.xaml(.cs)    Global exception handler → %LocalAppData%\LTTPEnhancementTools\crash.log

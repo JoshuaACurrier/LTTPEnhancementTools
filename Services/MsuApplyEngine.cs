@@ -8,7 +8,8 @@ public record ApplyRequest(
     IReadOnlyDictionary<string, string> Tracks, // slot -> pcm path
     OverwriteMode OverwriteMode,
     string? OutputBaseName = null,     // overrides ROM filename stem for all output files
-    string? SpriteSourcePath = null    // optional .zspr/.spr to inject into the output ROM
+    string? SpriteSourcePath = null,   // optional .zspr/.spr to inject into the output ROM
+    bool InPlace = false               // skip ROM copy; apply sprite directly to source ROM
 );
 
 public enum OverwriteMode { Ask, Overwrite, Skip }
@@ -103,10 +104,18 @@ public class ApplyEngine
 
         var filesWritten = new List<string>();
 
-        // STEP 5 — Copy ROM (always overwrite — excluded from conflict detection)
-        progress.Report(("Copying ROM...", 3, totalSteps));
-        await Task.Run(() => File.Copy(req.RomSourcePath, romDest, overwrite: true), ct);
-        filesWritten.Add(romDest);
+        // STEP 5 — Copy ROM (skip when applying in-place)
+        if (req.InPlace)
+        {
+            progress.Report(("Using ROM in-place...", 3, totalSteps));
+            romDest = req.RomSourcePath;
+        }
+        else
+        {
+            progress.Report(("Copying ROM...", 3, totalSteps));
+            await Task.Run(() => File.Copy(req.RomSourcePath, romDest, overwrite: true), ct);
+            filesWritten.Add(romDest);
+        }
 
         // STEP 6 (optional) — Apply sprite to output ROM
         int msuStepIndex = 4;
