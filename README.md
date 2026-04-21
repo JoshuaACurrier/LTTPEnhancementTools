@@ -2,7 +2,7 @@
 
 ![LTTP Enhanced](Resources/lttpEnhancedLogo.png)
 
-A Windows desktop utility for enhancing **Archipelago A Link to the Past** runs. Load your `.aplttp` patch file, apply MSU-1 music packs and custom Link sprites, then launch your entire Archipelago session — emulator, SNI, tracker, and Archipelago Launcher — in one click.
+A Windows desktop utility for enhancing **Archipelago A Link to the Past** runs. Load your `.aplttp` patch file, apply MSU-1 music packs and custom Link sprites, then launch your entire Archipelago session — emulator (with Lua connector), SNI, SNI client, and tracker — in one click.
 
 > **Bring Your Own ROM.** This tool requires you to provide your own legally-obtained ALttP ROM. It does not include, distribute, or circumvent any copyrighted game data. See [Legal & Copyright](#legal--copyright) below.
 
@@ -45,7 +45,7 @@ A Windows desktop utility for enhancing **Archipelago A Link to the Past** runs.
 
 ### General
 - **In-place enhancement** — sprite patches the `.sfc` directly; MSU files are written next to the ROM with matching names
-- **Smart music conflict handling** — when applying to a folder with existing PCM files, choose to overwrite, skip, or cancel
+- **Non-destructive re-runs** — existing PCM files are kept as-is when you re-run Enhance & Launch; only newly assigned tracks are written
 - **Auto-save session** — your last patch, sprite, and playlist are remembered and restored on next launch
 - **No admin rights required** — per-user install, no elevated permissions needed
 - **No .NET runtime required** — ships as a single self-contained EXE
@@ -126,7 +126,10 @@ Click **Enhance & Launch**. The tool will:
 1. Apply the selected Link sprite to the ROM (in-place)
 2. Create the `.msu` marker file (only when music tracks are assigned)
 3. Write all assigned `.pcm` files with the correct numbered names
-4. Launch SNI client, community tracker, and emulator
+4. Start SNI.exe if not already running
+5. Launch the SNI client with your server address prefilled, the community tracker, and the emulator (with Lua connector)
+
+In the SNI client, click **Connect** and enter your slot name when prompted — that's the only manual step.
 
 You can apply with just a sprite, just music, or both.
 

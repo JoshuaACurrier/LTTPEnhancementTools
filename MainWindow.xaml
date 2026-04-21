@@ -54,7 +54,7 @@
                         Padding="8,3"
                         VerticalAlignment="Top"
                         Margin="0,2,0,0">
-                    <TextBlock Text="v3.0.0"
+                    <TextBlock Text="v3.0.1"
                                FontSize="11"
                                Foreground="{StaticResource TextMutedBrush}"/>
                 </Border>

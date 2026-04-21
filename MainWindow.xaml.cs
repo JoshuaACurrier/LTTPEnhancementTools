@@ -567,7 +567,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 // SFC not generated yet — apply the bsdiff4 patch ourselves
                 if (string.IsNullOrEmpty(_baseRomPath) || !File.Exists(_baseRomPath))
                 {
-                    // Prompt user to select their base ROM
                     var romDlg = new OpenFileDialog
                     {
                         Title = "Select your vanilla ALttP ROM (base ROM for patching)",
@@ -592,7 +591,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 AppendLog($"ROM generated: {Path.GetFileName(sfcPath!)}");
             }
 
-            // SFC exists — set it as the ROM
             _romPath = metadata.ExpectedSfcPath;
             RomBaseName = Path.GetFileNameWithoutExtension(metadata.ExpectedSfcPath);
             OutputBaseName = RomBaseName;
@@ -600,9 +598,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             // Auto-populate server/room
             if (!string.IsNullOrEmpty(metadata.Server))
-            {
                 SeedUrl = metadata.Server;
-            }
 
             SaveAutoState();
             AppendLog($"Patch loaded: {metadata.PlayerName} (P{metadata.Player}) on {metadata.Server}");
@@ -1326,7 +1322,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             }
         }
 
-        var req = new ApplyRequest(_romPath, _outputDir, tracks, OverwriteMode.Ask, OutputBaseName?.Trim(), resolvedSpritePath, InPlace: true);
+        var req = new ApplyRequest(_romPath, _outputDir, tracks, OverwriteMode.Skip, OutputBaseName?.Trim(), resolvedSpritePath, InPlace: true);
 
         var progress = new Progress<(string step, int current, int total)>(p =>
         {
@@ -1835,23 +1831,26 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         LaunchEmulator();
     }
 
+    private async Task EnsureSniRunningAsync()
+    {
+        if (string.IsNullOrEmpty(_sniPath) || !File.Exists(_sniPath)) return;
+
+        var procs = System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_sniPath));
+        bool sniRunning = procs.Length > 0;
+        foreach (var p in procs) p.Dispose();
+
+        if (!sniRunning)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                { FileName = _sniPath, UseShellExecute = true })?.Dispose();
+            await System.Threading.Tasks.Task.Delay(1000); // let SNI initialize
+            AppendLog("SNI started.");
+        }
+    }
+
     private async Task LaunchArchipelagoAsync()
     {
-        // Start SNI if configured and not already running
-        if (!string.IsNullOrEmpty(_sniPath) && File.Exists(_sniPath))
-        {
-            var procs = System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_sniPath));
-            bool sniRunning = procs.Length > 0;
-            foreach (var p in procs) p.Dispose();
-
-            if (!sniRunning)
-            {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    { FileName = _sniPath, UseShellExecute = true })?.Dispose();
-                await System.Threading.Tasks.Task.Delay(1000); // let SNI initialize
-                AppendLog("SNI started.");
-            }
-        }
+        await EnsureSniRunningAsync();
 
         // Launch the SNI client directly (lives next to ArchipelagoLauncher.exe)
         string? sniClientPath = null;
@@ -1868,15 +1867,43 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         if (sniClientPath is not null)
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                { FileName = sniClientPath, UseShellExecute = true })?.Dispose();
-            AppendLog("SNI client started.");
+            // Skip if SNIClient is already running (e.g. launched by PatchViaArchipelagoAsync
+            // with the .aplttp positional arg to trigger the full patch + auto-connect flow)
+            var procs = System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(sniClientPath));
+            bool alreadyRunning = procs.Length > 0;
+            foreach (var p in procs) p.Dispose();
+
+            if (!alreadyRunning)
+            {
+                // Pass --connect with the server URL so SNIClient auto-connects
+                // to the correct room without re-triggering the .aplttp patch handler
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = sniClientPath,
+                    UseShellExecute = true
+                };
+                string? server = _archipelagoMetadata?.Server ?? _seedUrl;
+                if (!string.IsNullOrEmpty(server))
+                    psi.Arguments = $"--connect \"{server}\"";
+
+                System.Diagnostics.Process.Start(psi)?.Dispose();
+                AppendLog(string.IsNullOrEmpty(server)
+                    ? "SNI client started."
+                    : $"SNI client started (server: {server}).");
+            }
         }
         else if (!string.IsNullOrEmpty(_archipelagoLauncherPath) && File.Exists(_archipelagoLauncherPath))
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                { FileName = _archipelagoLauncherPath, UseShellExecute = true })?.Dispose();
-            AppendLog("Archipelago Launcher started.");
+            var procs = System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_archipelagoLauncherPath));
+            bool alreadyRunning = procs.Length > 0;
+            foreach (var p in procs) p.Dispose();
+
+            if (!alreadyRunning)
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    { FileName = _archipelagoLauncherPath, UseShellExecute = true })?.Dispose();
+                AppendLog("Archipelago Launcher started.");
+            }
         }
     }
 

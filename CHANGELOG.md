@@ -4,6 +4,17 @@ All notable changes to Archipelago LTTP Enhancer (formerly ALttP Enhancement Too
 
 ---
 
+## [3.0.1] — 2026-04-21
+
+### Fixed
+- **Double emulator launch** — removed the experimental Archipelago patch flow that launched SNIClient with the `.aplttp` positional arg. Archipelago's patcher was auto-launching the emulator without the Lua connector, while our code launched a second one with Lua. Now only our Lua-connected emulator opens.
+- **Existing music files prompt removed** — re-running Enhance & Launch on a folder that already has PCM files no longer shows a modal dialog. Existing tracks are kept as-is (Skip is now the default); only newly assigned tracks are written.
+
+### Changed
+- **Simpler Enhance & Launch flow** — the tool always generates the `.sfc` via its built-in bsdiff4 patcher, applies sprite/MSU enhancements, and launches SNIClient with `--connect` (server address prefilled). You click Connect and enter your slot name in the SNI client — one manual step for full reliability.
+
+---
+
 ## [3.0.0] — 2026-04-01
 
 ### Added
